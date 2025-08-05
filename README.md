@@ -73,13 +73,48 @@ event-management-app/
 ## Getting Started
 
 ### Prerequisites
-- Java 17 or higher
-- Node.js 18 or higher
-- Maven 3.6 or higher
-- Docker (optional)
-- PostgreSQL 15 (for production)
 
-### Running with Docker (Recommended)
+#### For macOS
+- macOS Ventura or newer recommended
+- Homebrew installed ([brew.sh](https://brew.sh))
+- Java 17+ (`brew install openjdk@17`)
+- Maven (`brew install maven`)
+- Node.js 18+ ([nvm recommended](https://github.com/nvm-sh/nvm))
+- Git (`brew install git`)
+- PostgreSQL 15 (`brew install postgresql@15`)
+- H2 (no installation needed, embedded)
+
+#### For Windows 11 (WSL)
+- Windows 11 with [WSL 2](https://learn.microsoft.com/en-us/windows/wsl/install)
+- Ubuntu 22.04 (recommended) installed via WSL
+- Java 17+ (`sudo apt install openjdk-17-jdk`)
+- Maven (`sudo apt install maven`)
+- Node.js 18+ ([nvm recommended](https://github.com/nvm-sh/nvm))
+- Git (`sudo apt install git`)
+- PostgreSQL 15 (`sudo apt install postgresql postgresql-contrib`)
+- H2 (no installation needed, embedded)
+
+### Environment Validation (WSL/macOS)
+
+Run these commands in your terminal to check if all dependencies are installed:
+
+```bash
+# Java
+java -version
+# Maven
+mvn -version
+# Node.js
+node -v
+npm -v
+# Git
+git --version
+# PostgreSQL (optional, for production profile)
+psql --version
+```
+
+If any command fails, install the missing dependency using the instructions above.
+
+### Project Setup
 
 1. **Clone the repository**
    ```bash
@@ -87,21 +122,11 @@ event-management-app/
    cd event-management-app
    ```
 
-2. **Build and run with Docker Compose**
-   ```bash
-   docker-compose up --build
-   ```
-
-3. **Access the application**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8080/api/events
-   - PostgreSQL: localhost:5432
-
-### Running Locally
+### Running Backend
 
 #### Option 1: Development with H2 (Quick Start)
 
-1. **Navigate to backend directory**
+1. **Go to backend directory**
    ```bash
    cd backend
    ```
@@ -111,33 +136,38 @@ event-management-app/
    mvn spring-boot:run -Dspring-boot.run.profiles=dev
    ```
 
-The backend will start on `http://localhost:8080` with H2 database.
+Backend will start at `http://localhost:8080` using H2 in-memory database.
 
 #### Option 2: Production with PostgreSQL
 
-1. **Install and start PostgreSQL**
-   ```bash
-   # macOS with Homebrew
-   brew install postgresql
-   brew services start postgresql
-   
-   # Create database
-   createdb eventdb
-   ```
+1. **Start PostgreSQL service**
+   - **macOS:**
+     ```bash
+     brew services start postgresql@15
+     createdb eventdb
+     ```
+   - **WSL:**
+     ```bash
+     sudo service postgresql start
+     createdb eventdb
+     ```
 
-2. **Navigate to backend directory**
+2. **Go to backend directory**
    ```bash
    cd backend
    ```
 
 3. **Run with production profile**
    ```bash
+   export DATABASE_URL=jdbc:postgresql://localhost:5432/eventdb
+   export DATABASE_USERNAME=postgres
+   export DATABASE_PASSWORD=password
    mvn spring-boot:run -Dspring-boot.run.profiles=prod
    ```
 
-#### Frontend Setup
+### Running Frontend
 
-1. **Navigate to frontend directory**
+1. **Go to frontend directory**
    ```bash
    cd frontend
    ```
@@ -147,12 +177,19 @@ The backend will start on `http://localhost:8080` with H2 database.
    npm install
    ```
 
-3. **Start the development server**
+3. **Start development server**
    ```bash
    npm start
    ```
 
-The frontend will start on `http://localhost:3000`
+Frontend will be available at `http://localhost:3000`
+
+### Notes for WSL
+
+- Work inside your Ubuntu/WSL terminal for best compatibility and performance.
+- You do not need Docker Desktop; all commands run natively in WSL.
+- PostgreSQL can be installed and run inside WSL.
+- For VSCode users, install the [Remote - WSL](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl) extension for seamless editing.
 
 ## Perfis de Execução
 
@@ -352,4 +389,62 @@ docker-compose -f docker-compose.prod.yml up --build
 
 ## License
 
-This project is licensed under the MIT License. 
+This project is licensed under the MIT License.
+
+## WSL Troubleshooting
+
+If you get "Network is unreachable" or cannot run `sudo apt-get update` in WSL:
+
+1. Disable IPv6 in `/etc/sysctl.conf`:
+   ```
+   net.ipv6.conf.all.disable_ipv6 = 1
+   net.ipv6.conf.default.disable_ipv6 = 1
+   net.ipv6.conf.lo.disable_ipv6 = 1
+   ```
+   Then run:
+   ```bash
+   sudo sysctl -p
+   wsl --shutdown
+   # Restart Ubuntu terminal
+   sudo apt-get update
+   ```
+
+2. Optionally, set DNS to Google:
+   ```bash
+   echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
+   ```
+
+3. Remove unused Docker repo if not using Docker in WSL:
+   ```bash
+   sudo rm /etc/apt/sources.list.d/docker.list
+   sudo apt-get update
+   ```
+
+## Frontend Troubleshooting
+
+If you see the error:
+
+```
+'react-scripts' is not recognized as an internal or external command,
+operable program or batch file.
+```
+
+Try the following steps:
+
+1. Make sure you are in the `frontend` directory.
+2. Delete `node_modules` and `package-lock.json`:
+   ```bash
+   rm -rf node_modules package-lock.json
+   ```
+3. Reinstall dependencies:
+   ```bash
+   npm install
+   ```
+4. Start the development server again:
+   ```bash
+   npm start
+   ```
+5. If the error persists, check that `react-scripts` is listed in your `package.json` dependencies. If not, install it manually:
+   ```bash
+   npm install react-scripts --save
+   ```

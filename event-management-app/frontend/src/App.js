@@ -6,6 +6,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 import EventList from './components/EventList';
+import EventTable from './components/EventTable';
 import EventForm from './components/EventForm';
 import EventDetail from './components/EventDetail';
 import Header from './components/Header';
@@ -30,7 +31,8 @@ function App() {
           <div className="App">
             <Header />
             <Routes>
-              <Route path="/" element={<EventList />} />
+              {/* <Route path="/" element={<EventList />} /> */}
+              <Route path="/" element={<EventTable />} />
               <Route path="/events/new" element={<EventForm />} />
               <Route path="/events/:id" element={<EventDetail />} />
               <Route path="/events/:id/edit" element={<EventForm />} />
