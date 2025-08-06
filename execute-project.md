@@ -1,10 +1,8 @@
 # Como Executar o Projeto Event Management System
 
-Este documento contém instruções passo a passo para configurar e executar o projeto Event Management System com implementação de Clean Code.
+Este documento contém instruções passo a passo para configurar e executar o projeto Event Management System.
 
-## 🧹 Clean Code Implementado
-
-O projeto foi refatorado seguindo princípios de Clean Code:
+## O projeto foi refatorado seguindo princípios de Clean Code:
 
 ### Backend (Java/Spring Boot)
 - ✅ **Dependency Injection**: Constructor injection em vez de field injection
@@ -377,3 +375,4 @@ Se encontrar problemas:
 - ✅ **Robustez** com tratamento centralizado de erros
 - ✅ **Consistência** com padrões estabelecidos
 - ✅ **Performance** com componentes otimizados 
+
